@@ -11,23 +11,16 @@ ${UPDATE_KUBECONFIG_COMMAND}
 helm dependency update ${DEPLOY_CHART_PATH:-helm/}
 
 # Helm Deployment
-UPGRADE_COMMAND="helm upgrade --wait --atomic --install --timeout ${TIMEOUT}"
-for config_file in ${DEPLOY_CONFIG_FILES//,/ }
-do
-    UPGRADE_COMMAND="${UPGRADE_COMMAND} -f ${config_file}"
-done
+UNINSTALL_COMMAND="helm uninstall --wait --atomic --timeout ${TIMEOUT}"
 if [ -n "$DEPLOY_NAMESPACE" ]; then
-    UPGRADE_COMMAND="${UPGRADE_COMMAND} -n ${DEPLOY_NAMESPACE}"
-fi
-if [ -n "$DEPLOY_VALUES" ]; then
-    UPGRADE_COMMAND="${UPGRADE_COMMAND} --set ${DEPLOY_VALUES}"
+    UNINSTALL_COMMAND="${UNINSTALL_COMMAND} -n ${DEPLOY_NAMESPACE}"
 fi
 if [ "$DEBUG" = true ]; then
-    UPGRADE_COMMAND="${UPGRADE_COMMAND} --debug"
+    UNINSTALL_COMMAND="${UNINSTALL_COMMAND} --debug"
 fi
 if [ "$DRY_RUN" = true ]; then
-    UPGRADE_COMMAND="${UPGRADE_COMMAND} --dry-run"
+    UNINSTALL_COMMAND="${UNINSTALL_COMMAND} --dry-run"
 fi
-UPGRADE_COMMAND="${UPGRADE_COMMAND} ${DEPLOY_NAME} ${DEPLOY_CHART_PATH:-helm/}"
-echo "Executing: ${UPGRADE_COMMAND}"
-${UPGRADE_COMMAND}
+UNINSTALL_COMMAND="${UNINSTALL_COMMAND} ${DEPLOY_NAME}"
+echo "Executing: ${UNINSTALL_COMMAND}"
+${UNINSTALL_COMMAND}
